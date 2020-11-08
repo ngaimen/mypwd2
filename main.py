@@ -3,13 +3,19 @@ import sys
 
 from Crypto.Cipher import AES
 
-# 补足字符串长度为16的倍数
+# 补足字符串长度为32的倍数
 def add_to_32(s):
     while len(s) % 32 != 0:
         s += '\0'
     return s
 
-# 补足字符串长度为16的倍数
+# 补足字符串长度为32的倍数
+def add_to_32_b(s):
+    while len(s) % 32 != 0:
+        s += b'\0'
+    return s
+
+# 补足字符串长度为32的倍数
 def add_to_32_ret_bytes(s):
     s = str.encode(s)
     while len(s) % 32 != 0:
@@ -25,16 +31,26 @@ def main():
 
     result_path = "jiamihou.txt"
 
-    if len(sys.argv) > 1:
+    shuruCanshuShuliang = len(sys.argv)
+
+    if shuruCanshuShuliang > 1:
         key_QueRen = input("re input pwd:")
         if key != key_QueRen:
             print("密码错误")
             return -1
         print("encode")
         path = sys.argv[1]
-        with open(path, 'r', encoding='utf8') as file:
+
+        if shuruCanshuShuliang > 2:
+            result_path = sys.argv[2]
+
+        with open(path, 'rb') as file:
             content = file.read()
-            encrypted_text = str(base64.encodebytes(aes.encrypt(add_to_32_ret_bytes(content))),
+            if type(content) is str:
+                content = add_to_32_ret_bytes(content)
+            elif type(content) is bytes:
+                content = add_to_32_b(content)
+            encrypted_text = str(base64.encodebytes(aes.encrypt(content)),
                                  encoding='utf8').replace('\n', '')  # 加密
 
             f = open(result_path, 'w')
